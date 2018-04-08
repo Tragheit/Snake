@@ -19,7 +19,7 @@ namespace Snake
             Head.Rect.Width = Head.Rect.Height = 10;
             Head.Rect.Fill = Brushes.Red;
             Parts = new List<SnakePart>();
-
+            
             Parts.Add(new SnakePart(19, 0));
             Parts.Add(new SnakePart(18, 0));
             Parts.Add(new SnakePart(17, 0));
