@@ -29,12 +29,16 @@ namespace Snake
 
         private DispatcherTimer _timer;
 
+        private SnakePart _food;
+        private int _partsToAdd;
+
         public MainWindow()
         {
             InitializeComponent();
             InitBoard();
             InitSnake();
             InitTimer();
+            InitFood();
         }
 
         void InitBoard()
@@ -69,7 +73,17 @@ namespace Snake
 
         private void MoveSnake()
         {
-            for (int i = _snake.Parts.Count - 1; i >= 1; i--)
+            int snakePartCount = _snake.Parts.Count;
+            if (_partsToAdd > 0)
+            {
+                SnakePart newPart = new SnakePart(_snake.Parts[_snake.Parts.Count - 1].X,
+                _snake.Parts[_snake.Parts.Count - 1].Y);
+                grid.Children.Add(newPart.Rect);
+                _snake.Parts.Add(newPart);
+                _partsToAdd--;
+            }
+
+            for (int i = snakePartCount - 1; i >= 1; i--)
             {
                 _snake.Parts[i].X = _snake.Parts[i - 1].X;
                 _snake.Parts[i].X = _snake.Parts[i - 1].X;
@@ -80,6 +94,8 @@ namespace Snake
             _snake.Head.X += _directionX;
             _snake.Head.Y += _directionY;
             _snake.RedrawSnake();
+
+            if (CheckFood()) RedrawFood();
         }
 
         void InitTimer()
@@ -122,6 +138,78 @@ namespace Snake
             }
         }
 
-    }
+        void InitFood()
+        {
+            _food = new SnakePart(10, 10);
+            _food.Rect.Width = _food.Rect.Height = 10;
+            _food.Rect.Fill = Brushes.Blue;
+            grid.Children.Add(_food.Rect);
+            Grid.SetColumn(_food.Rect, _food.X);
+            Grid.SetRow(_food.Rect, _food.Y);
+        }
 
+        private bool CheckFood()
+        {
+            Random rand = new Random();
+
+            if(_snake.Head.X == _food.X && _snake.Head.Y == _food.Y)
+            {
+                _partsToAdd += 20;
+
+                for(int i = 0; i < 20; i++)
+                {
+                    int x = rand.Next(0, (int)(grid.Width / SIZE));
+                    int y = rand.Next(0, (int)(grid.Height / SIZE));
+
+                    if (IsFieldFree(x, y))
+                    {
+                        _food.X = x;
+                        _food.Y = y;
+                        return true;
+                    }
+                }
+
+                for (int i = 0; i < grid.Width / SIZE; i++)
+                    for (int j = 0; j < grid.Height / SIZE; j++)
+                    {
+                        if (IsFieldFree(i, j))
+                        {
+                            _food.X = i;
+                            _food.Y = j;
+                            return true;
+                        }
+                    }
+                EndGame();
+            }
+            return false;
+        }
+
+        private bool IsFieldFree(int x, int y)
+        {
+            if (_snake.Head.X == x && _snake.Head.Y == y)
+                return false;
+            foreach (SnakePart snakePart in _snake.Parts)
+            {
+                if (snakePart.X == x && snakePart.Y == y)
+                    return false;
+            }
+            return true;
+        }
+
+        void EndGame()
+        {
+            _timer.Stop();
+            MessageBox.Show("KONIEC GRY");
+        }
+
+        private void RedrawFood()
+        {
+            Grid.SetColumn(_food.Rect, _food.X);
+            Grid.SetRow(_food.Rect, _food.Y);
+        }
     }
+}
+
+    
+
+   
