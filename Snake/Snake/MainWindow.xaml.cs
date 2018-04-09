@@ -95,7 +95,15 @@ namespace Snake
             _snake.Head.Y += _directionY;
             _snake.RedrawSnake();
 
-            if (CheckFood()) RedrawFood();
+            if (CheckCollision()) EndGame();
+            else
+            {
+                if (CheckFood())
+                {
+                    RedrawFood();
+                    _snake.RedrawSnake();
+                }
+            }
         }
 
         void InitTimer()
@@ -206,6 +214,34 @@ namespace Snake
         {
             Grid.SetColumn(_food.Rect, _food.X);
             Grid.SetRow(_food.Rect, _food.Y);
+        }
+
+        bool CheckCollision()
+        {
+            if (CheckBoardCollision())
+                return true;
+            if (CheckItselfCollision())
+                return true;
+            return false;
+        }
+
+        bool CheckBoardCollision()
+        {
+            if (_snake.Head.X < 0 || _snake.Head.X > grid.Width / SIZE)
+                return true;
+            if (_snake.Head.Y < 0 || _snake.Head.Y > grid.Height / SIZE)
+                return true;
+            return false;
+        }
+
+        bool CheckItselfCollision()
+        {
+            foreach (SnakePart snakePart in _snake.Parts)
+            {
+                if (_snake.Head.X == snakePart.X && _snake.Head.Y == snakePart.Y)
+                    return true;
+            }
+            return false;
         }
     }
 }
