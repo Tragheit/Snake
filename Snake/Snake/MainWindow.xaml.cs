@@ -89,7 +89,7 @@ namespace Snake
             for (int i = snakePartCount - 1; i >= 1; i--)
             {
                 _snake.Parts[i].X = _snake.Parts[i - 1].X;
-                _snake.Parts[i].X = _snake.Parts[i - 1].X;
+                _snake.Parts[i].Y = _snake.Parts[i - 1].Y;
             }
 
             _snake.Parts[0].X = _snake.Head.X;
